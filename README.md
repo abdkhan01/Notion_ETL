@@ -4,18 +4,17 @@ A python ETL script to incrementally extract data from workbooks and students fr
 
 # Design
 
-Script uses the Notion API to to access the backend for the workbooks and students databases. For students, every student is retrieved with name and UUIDs and workbook id. For workbooks, “Source Data” block is extract from the tables for every student. 
+Script uses the Notion API to to access the backend for databases. Every entity is retrieved with name and UUIDs. “Source Data” block is extract from the tables for every entity. 
 
-Transformation is being done using custom parsers. These parsers parse the API responses and extract the specified attributes. Two logical transformation zones are being followed. 
+Transformation is being done using custom parsers. These parsers parse the API responses and extract the specified attributes. Two logical transformation zones are being followed.
 
 ## Silver Zone
 
-Raw responses for each table are parsed and texts, numbers, dates, relations, and URLs are extracted. IDs,created_time and last_edited_time are renamed for each table. 
+Raw responses for each table are parsed and texts, numbers, dates, relations, and URLs are extracted. IDs,created_time and last_edited_time are renamed for each table. Tables are joined using the business logic.
 
 ## Gold Zone
 
 All tables are denormalized and created into a flat table
-
 Flat table is dumped into big query
 
 # Usage
@@ -42,25 +41,8 @@ script to load the gold json file to bigquery and deleted duplicates.
 
 Implements the order of ETL and stores the json file for gold table locally.
 
-# How To Run
-
-1. Environment can be configured in config.json as:
-
-``` {
-  "TOKEN_DEV" = "secret_<your_integration_secret>"
-  "headers_dev" = {
-      "Authorization": "Bearer " + TOKEN_DEV,    
-      "Content-Type": "application/json",    
-      "Notion-Version": "2021-05-13"
-      }
-  "WORKBOOK_DATABASE_DEV" = "<workbook_database_id>"
-  "STUDENT_DATABASE_DEV" = "<student_database_id>""
-} 
-```
-
-2. In main.py replace STUDENTS_ID and WORKBOOK_ID with STUDENT_DATABASE_DEV and WORKBOOK_DATABASE_DEV from config.py
-3. In extract_notion.py replace headers with headers_dev with config.py
-4. run main.py
+## Monitoring
+a log folder is maintained for every run with complete details of the run and error traces.
 
 # Caveats
 * Script is not yet flexible for an inconsistent workbook front end.
